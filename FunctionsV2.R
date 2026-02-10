@@ -6,24 +6,6 @@ library("seqinr")
 
 #Funções de fundação
 
-Calcular_Distância <- function(Interesse){
-  x <- Interesse[, "x"]
-  y <- Interesse[, "y"]
-  z <- Interesse[, "z"]
-  
-  n <- length(x)
-  Matriz_distancias <- matrix(0, nrow = n, ncol = n)
-  
-  for (i in 1:n) {
-    for (j in 1:n) {
-      Distância <- sqrt((x[i] - x[j])**2 + (y[i] - y[j])**2 + (z[i] - z[j])**2)
-      Matriz_distancias[i, j] <- Distância
-    }
-  }
-  
-  return(Matriz_distancias)
-}
-
 Renomear_cadeias <- function(Arquivo_pdb){
   pdb_atom <- Arquivo_pdb$atom
   
@@ -58,7 +40,27 @@ Renumerar_bfactor <- function(pdb_atom,Limpar_b_factor){
   return(pdb_atom)
 }
 
-Indices_ct <- function(pdb_atom,Matriz_ct,Distancia_contato){
+Calcular_Distância <- function(Interesse){
+ 
+  x <- Interesse[, "x"]
+  y <- Interesse[, "y"]
+  z <- Interesse[, "z"]
+  
+  n <- length(x)
+  Matriz_distancias <- matrix(0, nrow = n, ncol = n)
+  
+  for (i in 1:n) {
+    for (j in 1:n) {
+      Distância <- sqrt((x[i] - x[j])**2 + (y[i] - y[j])**2 + (z[i] - z[j])**2)
+      Matriz_distancias[i, j] <- Distância
+    }
+  }
+  
+  return(Matriz_distancias)
+}
+
+Indices_ct <- function(Arquivo_pdb,Matriz_ct,Distancia_contato){
+  pdb_atom <- Arquivo_pdb$atom
   
   chains <- tapply(pdb_atom$chain, pdb_atom$resno, unique)
   chains <- as.character(chains)
@@ -74,9 +76,14 @@ Indices_ct <- function(pdb_atom,Matriz_ct,Distancia_contato){
     (chains[i] == "A" & chains[j] == "B") |
     (chains[i] == "B" & chains[j] == "A")
   
-  cbind(i[validos & vetor_log], j[validos & vetor_log])
+  Ids <- cbind(i[validos & vetor_log], j[validos & vetor_log])
   
-  
+  return(Ids)
+}
+
+Sequenciar_interesse <- function(pdb){
+  seq <- pdbseq(pdb)
+  paste(seq, collapse = "")
 }
 
 #Funções de 1° Nível
@@ -95,13 +102,15 @@ Padronizar_pdb <- function(Arquivo_pdb,Limpar_b_factor){
 }
 
 Calcular_Contato <- function(Arquivo_pdb,Distancia_contato){
+  Atom <- Arquivo_pdb$atom
   
-  Matriz_ct <- Calcular_Distância(Interesse = Arquivo_pdb)
+  Matriz_ct <- Calcular_Distância(Interesse = Atom)
   
   Indices <- Indices_ct(Arquivo_pdb,Matriz_ct,Distancia_contato)
-
   
-return(Indices)
+  Contatos_A <- paste(unique(cbind(Indices)[,1]))
+
+  return(Contatos_A)
   
 }
 
@@ -110,9 +119,29 @@ return(Indices)
 
 
 
+#--------------------------------Bug yard---------------------------------#
 
+Rodar_ESM2 <- function(Arquivo_pdb,Temperatura) {
+  Porcentagens <- c(0,5,100)
+  
+  Sequencia <- Sequenciar_interesse(Arquivo_pdb)
+  
+  Contatos <- Calcular_Contato(Arquivo_pdb, Distancia_contato = 8)
+  
+  Posicao <- Randomizar_posicao(Contatos,Porcentagens)
+  
+  Comando <- paste("/home/pedro.paixao/anaconda3/condabin/conda run -n esm2-env","python /home/pedro.paixao/Code/generate_sequence_esm2.py", "--sequence", Sequencia, "--position", Posicao,"--temperature", Temperatura)
+  
+  system(Comando, wait = TRUE)
+  
+  saida <- readLines("completed_sequence.txt")
+  
+}
 
-
+Randomizar_posicao <- function(Contatos_unicos,Porcentagem){
+  Posicao <- sample(Contatos_unicos, size = ceiling(Porcentagem/100*length(Contatos_unicos)))
+  return(unlist(Posicao))
+}
 
 #--------------------------------TESTE-----------------------------------#
 
