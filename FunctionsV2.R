@@ -122,13 +122,19 @@ Calcular_Contato <- function(Arquivo_pdb,Distancia_contato){
 #--------------------------------Bug yard---------------------------------#
 
 Rodar_ESM2 <- function(Arquivo_pdb,Temperatura) {
-  Porcentagens <- c(0,5,100)
+  Porcentagens <- c(5,100)
   
   Sequencia <- Sequenciar_interesse(Arquivo_pdb)
   
   Contatos <- Calcular_Contato(Arquivo_pdb, Distancia_contato = 8)
+  for (i in Amostras) {
+    for (i in 1:length(Porcentagens)) {
+      Posicao <- Randomizar_posicao(Contatos,Porcentagens)  
+    }
+  }
   
-  Posicao <- Randomizar_posicao(Contatos,Porcentagens)
+  
+  
   
   Comando <- paste("/home/pedro.paixao/anaconda3/condabin/conda run -n esm2-env","python /home/pedro.paixao/Code/generate_sequence_esm2.py", "--sequence", Sequencia, "--position", Posicao,"--temperature", Temperatura)
   
@@ -144,7 +150,5 @@ Randomizar_posicao <- function(Contatos_unicos,Porcentagem){
 }
 
 #--------------------------------TESTE-----------------------------------#
-
-
 
 
