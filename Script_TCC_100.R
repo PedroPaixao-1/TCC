@@ -37,7 +37,7 @@ while (j <= 200) {
       next
     }
     Header <- paste(">EGFR|CHAIN A|Variante",j)
-    Multi_fasta[[j]] <- paste(Header,Saida, sep = " ")
+    Multi_fasta[[j]] <- paste(Header,Saida, sep = "\n")
     writeLines(unlist(Multi_fasta), "Variantes.fasta")
     j = j+1
   }
