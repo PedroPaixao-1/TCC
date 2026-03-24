@@ -3,6 +3,7 @@ library("bio3d")
 library("dplyr")
 library("readr")
 library("seqinr")
+library("stringr")
 
 #Funções de fundação
 
