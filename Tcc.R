@@ -21,7 +21,11 @@ Multi_fasta <- list()
 j <- 1
 k <- 1
 
+
+length(Porcentagem)
+
 for (k in 1:length(Porcentagem)){
+  j <- 1
   while (j <= 10) {
   
   
@@ -39,9 +43,9 @@ for (k in 1:length(Porcentagem)){
   }
     Header <- paste(">EGFR|CHAIN A|Variante",j)
     Multi_fasta[[j]] <- paste(Header,Saida, sep = "\n")
-    Arquivo_fasta <- paste("Variante_",Porcentagem[[k]],".fasta", collapse = "")
+    Arquivo_fasta <- paste("Variante",Porcentagem[[k]],".fasta", sep = "_")
     writeLines(unlist(Multi_fasta), Arquivo_fasta)
     j = j + 1
   }
-  k <- k + 1
+  k = k + 1
 }
