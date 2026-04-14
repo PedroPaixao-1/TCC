@@ -49,7 +49,66 @@ for (k in 1:length(Porcentagem)){
   }
   k = k + 1
 }
+# -----------------------------------------------------------------------------------
+library(stringr)
 
-Var_10[223:345] <- readLines("/home/pedro.paixao/Code/Variantes/Variantes/Variante_10_.fasta")
-Var_20 <- list(readLines("/home/pedro.paixao/Code/Variantes/Variantes/Variante_20_.fasta"))
-Var_20[[1]][400]
+base_path <- "C:/Users/Pichau/OneDrive/Documentos/Code/TCC-main/Fastas/Variantes/"
+
+# Leitura
+Var_10  <- readLines(paste0(base_path, "Variante_10_.fasta"))
+Var_20  <- readLines(paste0(base_path, "Variante_20_.fasta"))
+Var_30  <- readLines(paste0(base_path, "Variante_30_.fasta"))
+Var_40  <- readLines(paste0(base_path, "Variante_40_.fasta"))
+Var_50  <- readLines(paste0(base_path, "Variante_50_.fasta"))
+Var_60  <- readLines(paste0(base_path, "Variante_60_.fasta"))
+Var_70  <- readLines(paste0(base_path, "Variante_70_.fasta"))
+Var_80  <- readLines(paste0(base_path, "Variante_80_.fasta"))
+Var_90  <- readLines(paste0(base_path, "Variante_90_.fasta"))
+Var_100 <- readLines(paste0(base_path, "Variante_100_.fasta"))
+
+# Extração do domínio (posições 306-511) + collapse
+extrair_dominio <- function(fasta) {
+  seqs <- str_split(str_subset(fasta, "^EEKKVCQ"), "")
+  dom  <- lapply(seqs, `[`, 306:511)
+  sapply(dom, paste, collapse = "")
+}
+
+Var_10_dom_seq  <- extrair_dominio(Var_10)
+Var_20_dom_seq  <- extrair_dominio(Var_20)
+Var_30_dom_seq  <- extrair_dominio(Var_30)
+Var_40_dom_seq  <- extrair_dominio(Var_40)
+Var_50_dom_seq  <- extrair_dominio(Var_50)
+Var_60_dom_seq  <- extrair_dominio(Var_60)
+Var_70_dom_seq  <- extrair_dominio(Var_70)
+Var_80_dom_seq  <- extrair_dominio(Var_80)
+Var_90_dom_seq  <- extrair_dominio(Var_90)
+Var_100_dom_seq <- extrair_dominio(Var_100)
+
+substituir_seq <- function(fasta_original, seq_recortadas) {
+  headers    <- str_subset(fasta_original, "^>")
+  novo_fasta <- as.character(c(rbind(headers, seq_recortadas)))
+  return(novo_fasta)
+}
+
+Var_10_novo  <- substituir_seq(Var_10,  Var_10_dom_seq)
+Var_20_novo  <- substituir_seq(Var_20,  Var_20_dom_seq)
+Var_30_novo  <- substituir_seq(Var_30,  Var_30_dom_seq)
+Var_40_novo  <- substituir_seq(Var_40,  Var_40_dom_seq)
+Var_50_novo  <- substituir_seq(Var_50,  Var_50_dom_seq)
+Var_60_novo  <- substituir_seq(Var_60,  Var_60_dom_seq)
+Var_70_novo  <- substituir_seq(Var_70,  Var_70_dom_seq)
+Var_80_novo  <- substituir_seq(Var_80,  Var_80_dom_seq)
+Var_90_novo  <- substituir_seq(Var_90,  Var_90_dom_seq)
+Var_100_novo <- substituir_seq(Var_100, Var_100_dom_seq)
+
+# Salvamento
+writeLines(Var_10_novo,  paste0(base_path, "Variante_10_recortada.fasta"))
+writeLines(Var_20_novo,  paste0(base_path, "Variante_20_recortada.fasta"))
+writeLines(Var_30_novo,  paste0(base_path, "Variante_30_recortada.fasta"))
+writeLines(Var_40_novo,  paste0(base_path, "Variante_40_recortada.fasta"))
+writeLines(Var_50_novo,  paste0(base_path, "Variante_50_recortada.fasta"))
+writeLines(Var_60_novo,  paste0(base_path, "Variante_60_recortada.fasta"))
+writeLines(Var_70_novo,  paste0(base_path, "Variante_70_recortada.fasta"))
+writeLines(Var_80_novo,  paste0(base_path, "Variante_80_recortada.fasta"))
+writeLines(Var_90_novo,  paste0(base_path, "Variante_90_recortada.fasta"))
+writeLines(Var_100_novo, paste0(base_path, "Variante_100_recortada.fasta"))
